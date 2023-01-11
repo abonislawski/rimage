@@ -57,7 +57,7 @@ name = "ADSPFW"
 load_offset = "0x40000"
 
 [module]
-count = 19
+count = 20
 	[[module.entry]]
 	name = "BRNGUP"
 	uuid = "2B79E4F3-4675-F649-89DF-3BC194A91AEB"
@@ -530,3 +530,19 @@ count = 19
 				3, 0, 0, 0, 260, 3591000, 64, 85, 0, 0, 0,
 				4, 0, 0, 0, 260, 4477000, 96, 128, 0, 0, 0,
 				5, 0, 0, 0, 260, 7195000, 192, 192, 0, 0, 0]
+        [[module.entry]]
+        name = "RTC_AEC"
+        uuid = "B780A0A6-269F-466F-B477-23DFA05AF758"
+        affinity_mask = "0x3"
+        instance_count = "1"
+        domain_types = "1"
+        load_type = "1"
+        module_type = "10"
+	init_config = "1"
+        auto_start = "0"
+        sched_caps = [1, 0x00008000]
+
+        # pin = [dir, type, sample rate, size, container, channel-cfg]
+        pin = [0, 0, 0x8, 0x2, 0x2, 0x1,
+                0, 0, 0x8, 0x2, 0x2, 0x4,
+                1, 0, 0x8, 0x2, 0x2, 0x1]
