@@ -106,7 +106,6 @@ struct manifest_module {
 
 #define MAN_FW_DESC_OFFSET_ACE_V1_5 \
 	(MAN_META_EXT_OFFSET_ACE_V1_5 + \
-	sizeof(struct sof_man_adsp_meta_file_ext_v2_5) + \
 	MAN_EXT_PADDING)
 
 #define MAN_FW_DESC_OFFSET_V2_5 \
@@ -191,8 +190,6 @@ struct fw_image_manifest_ace_v1_5 {
 	struct css_header_v2_5 css;
 	struct signed_pkg_info_ext_ace_v1_5 signed_pkg;
 	struct info_ext_0x16 info_0x16;
-
-	struct sof_man_adsp_meta_file_ext_v2_5 adsp_file_ext;
 
 	/* reserved / pading at end of ext data - all 0s*/
 	uint8_t reserved[MAN_EXT_PADDING];

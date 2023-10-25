@@ -2257,10 +2257,6 @@ static int parse_adsp_config_ace_v1_5(const toml_table_t *toml, struct image *im
 	if (ret < 0)
 		return err_key_parse("partition_info", NULL);
 
-	ret = parse_adsp_file_ext_v2_5(toml, &ctx, &out->man_ace_v1_5->adsp_file_ext, verbose);
-	if (ret < 0)
-		return err_key_parse("adsp_file", NULL);
-
 	ret = parse_fw_desc(toml, &ctx, &out->man_ace_v1_5->desc, verbose);
 	if (ret < 0)
 		return err_key_parse("fw_desc", NULL);

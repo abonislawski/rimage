@@ -48,10 +48,6 @@ partition_usage = "0x23"
 [[signed_pkg.module]]
 name = "ADSP.met"
 
-[adsp_file]
-[[adsp_file.comp]]
-base_offset = "0x2000"
-
 [fw_desc.header]
 name = "ADSPFW"
 load_offset = "0x40000"

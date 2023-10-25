@@ -593,14 +593,16 @@ static int man_write_unsigned_mod(struct image *image, int meta_start_offset,
 {
 	int count;
 
-	/* write metadata file for unsigned FW */
-	count = fwrite(image->fw_image + meta_start_offset,
-		       ext_file_size, 1,
-		       image->out_man_fd);
+	if (ext_file_size) {
+		/* write metadata file for unsigned FW */
+		count = fwrite(image->fw_image + meta_start_offset,
+			       ext_file_size, 1,
+			       image->out_man_fd);
 
-	/* did the metadata/manifest write succeed ? */
-	if (count != 1)
-		return file_error("failed to write meta", image->out_man_file);
+		/* did the metadata/manifest write succeed ? */
+		if (count != 1)
+			return file_error("failed to write meta", image->out_man_file);
+	}
 
 	fclose(image->out_man_fd);
 
@@ -1490,9 +1492,10 @@ int man_write_fw_ace_v1_5(struct image *image)
 
 	/* calculate hash inside ADSP meta data extension for padding to end */
 	assert(image->meu_offset < image->image_end);
-	ret = hash_sha384(image->fw_image + image->meu_offset, image->image_end - image->meu_offset,
-			  m->adsp_file_ext.comp_desc[0].hash,
-			  sizeof(m->adsp_file_ext.comp_desc[0].hash));
+	//ret = hash_sha384(image->fw_image + image->meu_offset, image->image_end - image->meu_offset,
+	//				  m->adsp_file_ext.comp_desc[0].hash,
+	//				  sizeof(m->adsp_file_ext.comp_desc[0].hash));
+
 	if (ret)
 		goto err;
 
@@ -1500,12 +1503,12 @@ int man_write_fw_ace_v1_5(struct image *image)
 	memset(m->reserved, 0xff, 16);
 
 	/* calculate hash inside ext info 16 of sof_man_adsp_meta_file_ext_v2_5 */
-	assert((MAN_META_EXT_OFFSET_ACE_V1_5 + sizeof(struct sof_man_adsp_meta_file_ext_v2_5)) <
-	       image->image_end);
+	//assert((MAN_META_EXT_OFFSET_ACE_V1_5 + sizeof(struct sof_man_adsp_meta_file_ext_v2_5)) <
+	//       image->image_end);
 
-	ret = hash_sha384(image->fw_image + MAN_META_EXT_OFFSET_ACE_V1_5,
-			  sizeof(struct sof_man_adsp_meta_file_ext_v2_5),
-			  m->signed_pkg.module[0].hash, sizeof(m->signed_pkg.module[0].hash));
+	//ret = hash_sha384(image->fw_image + MAN_META_EXT_OFFSET_ACE_V1_5,
+	//		  sizeof(struct sof_man_adsp_meta_file_ext_v2_5),
+	//		  m->signed_pkg.module[0].hash, sizeof(m->signed_pkg.module[0].hash));
 	if (ret)
 		goto err;
 
@@ -1540,7 +1543,7 @@ int man_write_fw_ace_v1_5(struct image *image)
 	/* write the unsigned files*/
 	ret = man_write_unsigned_mod(image, MAN_META_EXT_OFFSET_ACE_V1_5,
 				     MAN_FW_DESC_OFFSET_ACE_V1_5,
-				     sizeof(struct sof_man_adsp_meta_file_ext_v2_5));
+				     0);
 	if (ret < 0)
 		goto err;
 
