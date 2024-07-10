@@ -27,7 +27,8 @@ static int man_open_rom_file(struct image *image)
 {
 	uint32_t size;
 
-	sprintf(image->out_rom_file, "%s.rom", image->out_file);
+	snprintf(image->out_rom_file, sizeof(image->out_rom_file),
+			 "%s.rom", image->out_file);
 	unlink(image->out_rom_file);
 
 	size = image->adsp->mem_zones[SOF_FW_BLK_TYPE_ROM].size;
@@ -50,7 +51,8 @@ static int man_open_rom_file(struct image *image)
 
 static int man_open_unsigned_file(struct image *image)
 {
-	sprintf(image->out_unsigned_file, "%s.uns", image->out_file);
+	snprintf(image->out_unsigned_file, sizeof(image->out_unsigned_file),
+			 "%s.uns", image->out_file);
 	unlink(image->out_unsigned_file);
 
 	/* open unsigned FW outfile for writing */
@@ -67,7 +69,8 @@ static int man_open_unsigned_file(struct image *image)
 static int man_open_manifest_file(struct image *image)
 {
 	/* open manifest outfile for writing */
-	sprintf(image->out_man_file, "%s.met", image->out_file);
+	snprintf(image->out_man_file, sizeof(image->out_man_file),
+			 "%s.met", image->out_file);
 	unlink(image->out_man_file);
 
 	image->out_man_fd = fopen(image->out_man_file, "wb");
@@ -1361,10 +1364,10 @@ err:
 int verify_image(struct image *image)
 {
 	FILE *in_file;
-	int ret, i;
+	int ret = 0;
 	long size;
 	void *buffer;
-	size_t read;
+	size_t read, i;
 
 	/* is verify supported for target ? */
 	if (!image->adsp->verify_firmware) {
@@ -1432,7 +1435,7 @@ int verify_image(struct image *image)
 		image->verify_file);
 out:
 	fclose(in_file);
-	return 0;
+	return ret;
 }
 
 
@@ -1440,7 +1443,8 @@ int resign_image(struct image *image)
 {
 	int key_size, key_file_size;
 	void *buffer = NULL;
-	size_t size, read;
+	size_t read;
+	int32_t size;
 	FILE *in_file;
 	int ret, i;
 
@@ -1487,7 +1491,7 @@ int resign_image(struct image *image)
 	/* read file into buffer */
 	read = fread(buffer, 1, size, in_file);
 	if (read != size) {
-		fprintf(stderr, "error: unable to read %zu bytes from %s err %d\n",
+		fprintf(stderr, "error: unable to read %d bytes from %s err %d\n",
 					size, image->in_file, errno);
 		ret = errno;
 		goto out;

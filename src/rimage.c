@@ -160,7 +160,8 @@ int main(int argc, char *argv[])
 
 	if (image.in_file) {
 		fprintf(stdout, "going to re-sign\n");
-		return resign_image(&image);
+		ret = resign_image(&image);
+		goto out;
 	}
 
 	/* set IMR Type in found machine definition */

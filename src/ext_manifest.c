@@ -25,7 +25,8 @@ const struct ext_man_header ext_man_template = {
 static int ext_man_open_file(struct image *image)
 {
 	/* open extended manifest outfile for writing */
-	sprintf(image->out_ext_man_file, "%s.xman", image->out_file);
+	snprintf(image->out_ext_man_file, sizeof(image->out_ext_man_file),
+			 "%s.xman", image->out_file);
 	unlink(image->out_ext_man_file);
 
 	image->out_ext_man_fd = fopen(image->out_ext_man_file, "wb");

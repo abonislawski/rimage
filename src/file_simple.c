@@ -128,6 +128,11 @@ static int simple_write_module(struct image *image, struct module *module)
 
 	/* Get the pointer of writing hdr */
 	ptr_hdr = ftell(image->out_fd);
+	if (ptr_hdr < 0) {
+		fprintf(stderr, "error: cant get file position\n");
+		return -errno;
+	}
+
 	count = fwrite(&hdr, sizeof(hdr), 1, image->out_fd);
 	if (count != 1) {
 		fprintf(stderr, "error: failed to write section header %d\n",
@@ -172,15 +177,28 @@ static int simple_write_module(struct image *image, struct module *module)
 	hdr.size += padding;
 	/* Record current pointer, will set it back after overwriting hdr */
 	ptr_cur = ftell(image->out_fd);
+	if (ptr_cur < 0) {
+		fprintf(stderr, "error: cant get file position\n");
+		return -errno;
+	}
 	/* overwrite hdr */
-	fseek(image->out_fd, ptr_hdr, SEEK_SET);
+	err = fseek(image->out_fd, ptr_hdr, SEEK_SET);
+	if (err) {
+		fprintf(stderr, "cant seek %d\n", -errno);
+		return -errno;
+	}
+
 	count = fwrite(&hdr, sizeof(hdr), 1, image->out_fd);
 	if (count != 1) {
 		fprintf(stderr, "error: failed to write section header %d\n",
 			-errno);
 		return -errno;
 	}
-	fseek(image->out_fd, ptr_cur, SEEK_SET);
+	err = fseek(image->out_fd, ptr_cur, SEEK_SET);
+	if (err) {
+		fprintf(stderr, "cant seek %d\n", -errno);
+		return -errno;
+	}
 
 	fprintf(stdout, "\n");
 	/* return padding size */
@@ -324,7 +342,12 @@ int simple_write_firmware(struct image *image)
 		hdr.file_size += ret;
 	}
 	/* overwrite hdr */
-	fseek(image->out_fd, 0, SEEK_SET);
+	ret = fseek(image->out_fd, 0, SEEK_SET);
+	if (ret) {
+		fprintf(stderr, "cant seek %d\n", -errno);
+		return -errno;
+	}
+
 	count = fwrite(&hdr, sizeof(hdr), 1, image->out_fd);
 	if (count != 1)
 		return -errno;
